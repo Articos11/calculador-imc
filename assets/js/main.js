@@ -1,81 +1,88 @@
-// Capturar o evento de submit de formulário.
+// Capturing the event of the form. 
 const form = document.querySelector('.form');
 
-// É adicionado um eventListener quando o submit é ativado, o que irá ativar a função a seguir. 
-form.addEventListener('submit', function(e){
-    // preventDefault evita que a página seja recarregada após o envio do formulário.
+// Then I need to create a function alongside an eventListener so I can manipulate the DOM later on. 
+
+form.addEventListener('submit', function (e) {
+    // The parameter e stands for Event, used in more professional projects.
+    //preventDefault will stop the page from reloading everytime the submit is sent. 
     e.preventDefault();
-    
-    // Irá determinar de onde o evento da função receberá o elemento, nesse caso, o submit. 
-    const inputPeso = e.target.querySelector('#peso');
-    const inputAltura = e.target.querySelector('#altura');
-    
-    // As variáveis abaixo são onde o valor recebido no formulário serão convertidos em números. 
+    console.log('Evento previnido.');
+
+    // Now, to capture the inputs on the form to make it possible to get the numbers. 
+    // These captures are not values. They will come as the html line. They MUST be converted into numbers.
+    const inputPeso = document.querySelector('#peso');
+    const inputAltura = document.querySelector('#altura');
+
+    // Here we will convert the values inside the form to numbers. Anything aside that will be shown as NaN.
     const peso = Number(inputPeso.value);
     const altura = Number(inputAltura.value);
 
-    // Se peso for diferente de numero, será retornado peso inválido e o código será encerrado.
-    if (!peso){
-                     // par 1          par 2
-        setResultado('Peso inválido.', false);
+    console.log(peso, altura);
+
+    // If peso is anything other than an Number, two parameters will be sent to setResultado(), one with the message and the other with 'false', so the isValid is shown. 
+    if (!peso) {
+        setResultado('Peso Inválido', false);
+        // Return interrupts the code, stopping it on track.
         return;
     }
 
-    // Se a altura for diferente do número, será retornado altura inválida e o código será encerrado.
+    // If altura is anything other than an Number, two parameters will be sent to setResultado(), one with the message and the other with 'false', so the isValid is shown.
     if (!altura) {
-                     // par 1            par 2
-        setResultado('Altura inválida.', false);
-        return; 
+        setResultado('Peso Inválido', false);
+        return;
     }
 
-    // Aqui serão passados para a função getImc os valores de peso e altura. 
     const imc = getImc(peso, altura);
     const nivelImc = getNivelImc(imc);
 
-    const msg = `Seu IMC é ${imc} (${nivelImc})`;
+    const msg = `Seu nível de IMC é ${imc} (${nivelImc})`;
 
     setResultado(msg, true);
-    console.log(imc, nivelImc);
 });
 
-function getNivelImc(imc){
+// Here is a function with the sole purpose to create a new <p>
+function criaP() {
+    const p = document.createElement('p');
+    // The return instruction is very necessary as it will return the paragraph.
+    return p;
+}
+
+// Here is the function that will show the results on the screen.
+function setResultado(msg, isValid) {
+    const resultado = document.querySelector('#resultado');
+    // This one instruction here will reset the parameter everytime a new value is set on the form.
+    resultado.innerHTML = '';
+
+    const p = criaP();
+
+    if (isValid) {
+        // This will create a class element on the recently created <p> so it can be manipulated on the CSS.
+        p.classList.add('paragrafo-resultado');
+    } else {
+        // If anything goes wrong, another class will be added to show another result.
+        p.classList.add('bad');
+    }
+    // This will receive the msg parameter and will append the child <p> to the div <resultado>
+    p.innerHTML = msg;
+    resultado.appendChild(p)
+}
+
+// This one is a simple function to return the result within the math of the IMC. it will return the result already calculated. 
+function getImc(peso, altura) {
+    const imc = peso / altura ** 2;
+    return imc.toFixed(2);
+}
+
+function getNivelImc(imc) {
+    // An array is created with a few strings which stores the names of the levels of IMC.
     const nivel = ['Abaixo do peso', 'Peso normal', 'Sobrepeso', 'Obesidade grau 1', 'Obesidade grau 2', 'Obesidade grau 3'];
-    
-    // Caso o if realize uma única condições, é possível deixa-lo numa linha única.
+
+    // ifs can be done with single lines if you aim for only one result.
     if (imc >= 39.9) return nivel[5];
     if (imc >= 34.9) return nivel[4];
     if (imc >= 29.9) return nivel[3];
     if (imc >= 24.9) return nivel[2];
     if (imc >= 18.5) return nivel[1];
     if (imc < 18.5) return nivel[0];
-}
-
-// Essa função receberá os valores de peso e altura inseridos no formulário.
-function getImc(peso, altura) {
-    const imc = peso / altura ** 2;
-    return imc.toFixed(2);
-}
-
-function criaP() {
-    // Após isso, é criado uma variável que guarda um <p> dentro de si, e logo após esse P é inserido dentro de resultado, que está zerado. 
-    const p = document.createElement('p');
-    // Irá retornar para quem o chamou a tag <p>
-    return p;
-}
-
-function setResultado (msg, isValid) {
-    // É selecionada a div com a id resultado e é zerado o HTML, deixando-o em branco toda vez que um novo resultado for criado. 
-    const resultado = document.querySelector('#resultado');
-    resultado.innerHTML = '';
-
-    const p = criaP();
-
-    if (isValid) {
-        p.classList.add('paragrafo-resultado'); 
-    } else {
-        p.classList.add('bad');
-    }
-
-    p.innerHTML = msg;
-    resultado.appendChild(p);
 }
